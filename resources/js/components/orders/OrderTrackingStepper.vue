@@ -21,6 +21,7 @@ const steps = [
     { key: 'shipped', title: 'Shipped', description: 'On the way', icon: Truck },
     { key: 'out_for_delivery', title: 'Out for Delivery', description: 'Almost there', icon: Truck },
     { key: 'delivered', title: 'Delivered', description: 'Completed', icon: PackageCheck },
+    { key: 'received', title: 'Received', description: 'Confirmed by customer', icon: CheckCircle2 },
 ] as const;
 
 const activeStep = () => {

@@ -45,7 +45,7 @@ class OrderController extends Controller
      */
     public function update(OrderStatusUpdateRequest $request, Order $order): RedirectResponse
     {
-        $this->orderService->updateStatus($order, $request->string('status')->toString());
+        $this->orderService->updateStatus($order, $request->validated());
 
         return redirect()->route('admin.orders.show', $order);
     }

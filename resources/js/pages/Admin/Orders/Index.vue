@@ -1,17 +1,33 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
+import ProductImage from '@/components/ProductImage.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { index, show } from '@/routes/admin/orders';
 
+type OrderItem = {
+    id: number;
+    name: string;
+    quantity: number;
+    product?: { image_url: string };
+};
+
 type Order = {
     id: number;
     status: string;
     total: string;
     created_at: string;
-    user: { name: string };
+    payment_method: string;
+    shipping_method: string;
+    delivery_estimate_label?: string | null;
+    estimated_delivery_date?: string | null;
+    contact_number: string;
+    address: string;
+    city: string;
+    user: { name: string; email: string };
+    items: OrderItem[];
 };
 
 type PaginatedOrders = {
@@ -44,10 +60,10 @@ const props = defineProps<{
                     <select
                         name="status"
                         :value="props.filters.status"
-                        class="h-9 rounded-md border px-3 text-sm"
+                        class="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                        <option value="">All statuses</option>
-                        <option v-for="status in props.statuses" :key="status" :value="status">
+                        <option value="" class="bg-background text-foreground">All statuses</option>
+                        <option v-for="status in props.statuses" :key="status" :value="status" class="bg-background text-foreground">
                             {{ status.replaceAll('_', ' ') }}
                         </option>
                     </select>
@@ -58,35 +74,58 @@ const props = defineProps<{
 
         <Card>
             <CardContent class="pt-6">
-                <div class="overflow-x-auto rounded-md border">
-                    <table class="w-full min-w-[680px] text-sm">
-                        <thead class="bg-muted/40">
-                            <tr>
-                                <th class="px-4 py-3 text-left font-medium">Order</th>
-                                <th class="px-4 py-3 text-left font-medium">Customer</th>
-                                <th class="px-4 py-3 text-left font-medium">Date</th>
-                                <th class="px-4 py-3 text-left font-medium">Status</th>
-                                <th class="px-4 py-3 text-left font-medium">Total</th>
-                                <th class="px-4 py-3 text-left font-medium">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="order in props.orders.data" :key="order.id" class="border-t">
-                                <td class="px-4 py-3">#{{ order.id }}</td>
-                                <td class="px-4 py-3">{{ order.user.name }}</td>
-                                <td class="px-4 py-3">{{ order.created_at }}</td>
-                                <td class="px-4 py-3">
-                                    <Badge variant="outline">{{ order.status.replaceAll('_', ' ') }}</Badge>
-                                </td>
-                                <td class="px-4 py-3">${{ order.total }}</td>
-                                <td class="px-4 py-3">
-                                    <Button as-child size="sm" variant="outline">
-                                        <Link :href="show(order.id)">Details</Link>
-                                    </Button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="space-y-3">
+                    <div
+                        v-for="order in props.orders.data"
+                        :key="order.id"
+                        class="rounded-lg border p-4"
+                    >
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                                <p class="font-semibold">Order #{{ order.id }}</p>
+                                <p class="text-xs text-muted-foreground">
+                                    {{ order.created_at }} • {{ order.user.name }} • {{ order.user.email }}
+                                </p>
+                            </div>
+                            <Badge variant="outline">{{ order.status.replaceAll('_', ' ') }}</Badge>
+                        </div>
+
+                        <div class="mt-3 grid gap-3 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <p class="text-xs font-medium text-muted-foreground">Items</p>
+                                <div
+                                    v-for="item in order.items"
+                                    :key="item.id"
+                                    class="flex items-center gap-2"
+                                >
+                                    <ProductImage
+                                        :src="item.product?.image_url ?? '/images/product-placeholder.svg'"
+                                        :alt="item.name"
+                                        class="h-10 w-10 rounded-md object-cover"
+                                    />
+                                    <span class="text-sm">{{ item.name }} x {{ item.quantity }}</span>
+                                </div>
+                                <p class="text-xs text-muted-foreground">Total items: {{ order.items.reduce((sum, item) => sum + item.quantity, 0) }}</p>
+                            </div>
+                            <div class="space-y-1 text-sm">
+                                <p><strong>Total:</strong> ${{ order.total }}</p>
+                                <p><strong>Payment:</strong> {{ order.payment_method }}</p>
+                                <p><strong>Shipping:</strong> {{ order.shipping_method }}</p>
+                                <p>
+                                    <strong>Delivery Estimate:</strong>
+                                    {{ order.estimated_delivery_date ?? order.delivery_estimate_label ?? 'Not set' }}
+                                </p>
+                                <p><strong>Contact:</strong> {{ order.contact_number }}</p>
+                                <p><strong>Address:</strong> {{ order.address }}, {{ order.city }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <Button as-child size="sm" variant="outline">
+                                <Link :href="show(order.id)">View Details</Link>
+                            </Button>
+                        </div>
+                    </div>
                 </div>
             </CardContent>
         </Card>

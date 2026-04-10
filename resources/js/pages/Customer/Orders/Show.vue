@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
+import ProductImage from '@/components/ProductImage.vue';
 import OrderTrackingStepper from '@/components/orders/OrderTrackingStepper.vue';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { index, updateStatus } from '@/routes/customer/orders';
 
 type OrderItem = {
     id: number;
     name: string;
     quantity: number;
     line_total: string;
+    product?: { image_url: string };
 };
 
 type Order = {
@@ -18,11 +22,28 @@ type Order = {
     subtotal: string;
     shipping_fee: string;
     created_at: string;
+    full_name: string;
+    address: string;
+    city: string;
+    postal_code: string;
+    contact_number: string;
+    shipping_method: string;
+    payment_method: string;
+    delivery_estimate_label?: string | null;
+    estimated_delivery_date?: string | null;
     items: OrderItem[];
 };
 
 const props = defineProps<{ order: Order }>();
 
+const canMarkReceived = ['delivered', 'out_for_delivery'].includes(props.order.status);
+const canCancel = ['pending', 'confirmed', 'packed'].includes(props.order.status);
+const deliveryEstimate = props.order.estimated_delivery_date ?? props.order.delivery_estimate_label ?? 'Not set';
+const orderDate = new Date(props.order.created_at).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+});
 </script>
 
 <template>
@@ -35,6 +56,16 @@ const props = defineProps<{ order: Order }>();
         </div>
 
         <Card>
+            <CardHeader><CardTitle>Order Metadata</CardTitle></CardHeader>
+            <CardContent class="grid gap-2 text-sm md:grid-cols-2">
+                <p><strong>Order Date:</strong> {{ orderDate }}</p>
+                <p><strong>Estimated Arrival:</strong> {{ deliveryEstimate }}</p>
+                <p><strong>Shipping Method:</strong> {{ props.order.shipping_method }}</p>
+                <p><strong>Payment Method:</strong> {{ props.order.payment_method }}</p>
+            </CardContent>
+        </Card>
+
+        <Card>
             <CardHeader><CardTitle>Tracking</CardTitle></CardHeader>
             <CardContent>
                 <OrderTrackingStepper :status="props.order.status" />
@@ -44,10 +75,28 @@ const props = defineProps<{ order: Order }>();
         <Card>
             <CardHeader><CardTitle>Items</CardTitle></CardHeader>
             <CardContent class="space-y-2 text-sm">
-                <div v-for="item in props.order.items" :key="item.id" class="flex justify-between border-b pb-2 last:border-none">
-                    <span>{{ item.name }} x {{ item.quantity }}</span>
+                <div v-for="item in props.order.items" :key="item.id" class="flex items-center justify-between border-b pb-2 last:border-none">
+                    <div class="flex items-center gap-3">
+                        <ProductImage
+                            :src="item.product?.image_url ?? '/images/product-placeholder.svg'"
+                            :alt="item.name"
+                            class="h-12 w-12 rounded-md object-cover"
+                        />
+                        <span>{{ item.name }} x {{ item.quantity }}</span>
+                    </div>
                     <span>${{ item.line_total }}</span>
                 </div>
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader><CardTitle>Shipping Address</CardTitle></CardHeader>
+            <CardContent class="space-y-1 text-sm">
+                <p><strong>Name:</strong> {{ props.order.full_name }}</p>
+                <p><strong>Contact:</strong> {{ props.order.contact_number }}</p>
+                <p><strong>Address:</strong> {{ props.order.address }}</p>
+                <p><strong>City:</strong> {{ props.order.city }}</p>
+                <p><strong>Postal Code:</strong> {{ props.order.postal_code }}</p>
             </CardContent>
         </Card>
 
@@ -59,5 +108,21 @@ const props = defineProps<{ order: Order }>();
                 <div class="flex justify-between font-semibold"><span>Total</span><span>${{ props.order.total }}</span></div>
             </CardContent>
         </Card>
+
+        <div class="flex flex-wrap gap-2">
+            <Button as-child variant="outline">
+                <Link :href="index()">Back to Orders</Link>
+            </Button>
+            <Button as-child :disabled="!canMarkReceived">
+                <Link as="button" method="patch" :href="updateStatus(props.order.id)" :data="{ status: 'received' }">
+                    Order Received
+                </Link>
+            </Button>
+            <Button as-child variant="destructive" :disabled="!canCancel">
+                <Link as="button" method="patch" :href="updateStatus(props.order.id)" :data="{ status: 'cancelled' }">
+                    Cancel Order
+                </Link>
+            </Button>
+        </div>
     </div>
 </template>

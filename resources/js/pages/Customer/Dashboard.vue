@@ -10,16 +10,12 @@ import { index as customerOrdersIndex } from '@/routes/customer/orders';
 import { index as customerProductsIndex } from '@/routes/customer/products';
 import { show as customerProductShow } from '@/routes/customer/products';
 
-type OrderItem = {
-    id: number;
-    name: string;
-};
-
 type Order = {
     id: number;
     status: string;
     total: string;
-    items: OrderItem[];
+    order_title: string;
+    created_at_human: string;
 };
 
 type Product = {
@@ -81,10 +77,13 @@ defineOptions({
                 <div
                     v-for="order in props.recentOrders"
                     :key="order.id"
-                    class="flex items-center justify-between border-b pb-2 last:border-none"
+                    class="border-b pb-2 last:border-none"
                 >
-                    <span>#{{ order.id }} - {{ order.status.replaceAll('_', ' ') }}</span>
-                    <span>${{ order.total }}</span>
+                    <p class="font-medium">{{ order.order_title }}</p>
+                    <p class="text-xs text-muted-foreground">
+                        Order #{{ order.id }} • <span class="capitalize">{{ order.status.replaceAll('_', ' ') }}</span> • {{ order.created_at_human }}
+                    </p>
+                    <p class="mt-1 font-semibold">${{ order.total }}</p>
                 </div>
                 <div v-if="props.recentOrders.length === 0" class="text-muted-foreground">
                     You have not placed any orders yet.

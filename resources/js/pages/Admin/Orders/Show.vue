@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { Form, Head, Link } from '@inertiajs/vue3';
 import OrderTrackingStepper from '@/components/orders/OrderTrackingStepper.vue';
+import ProductImage from '@/components/ProductImage.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { show, update } from '@/routes/admin/orders';
 
 type OrderItem = {
@@ -11,6 +14,7 @@ type OrderItem = {
     name: string;
     quantity: number;
     line_total: string;
+    product?: { image_url: string };
 };
 
 type Order = {
@@ -26,6 +30,9 @@ type Order = {
     city: string;
     postal_code: string;
     shipping_method: string;
+    payment_method: string;
+    delivery_estimate_label?: string | null;
+    estimated_delivery_date?: string | null;
     items: OrderItem[];
 };
 
@@ -53,10 +60,30 @@ const props = defineProps<{
                         :value="props.order.status"
                         class="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring"
                     >
-                        <option v-for="status in props.statuses" :key="status" :value="status">
+                        <option v-for="status in props.statuses" :key="status" :value="status" class="bg-background text-foreground">
                             {{ status.replaceAll('_', ' ') }}
                         </option>
                     </select>
+                    <div class="grid gap-1">
+                        <Label for="delivery_estimate_label" class="text-xs">Estimate Label</Label>
+                        <Input
+                            id="delivery_estimate_label"
+                            name="delivery_estimate_label"
+                            :default-value="props.order.delivery_estimate_label ?? ''"
+                            placeholder="e.g. 3 to 5 days"
+                            class="h-9 w-44"
+                        />
+                    </div>
+                    <div class="grid gap-1">
+                        <Label for="estimated_delivery_date" class="text-xs">Estimated Date</Label>
+                        <Input
+                            id="estimated_delivery_date"
+                            name="estimated_delivery_date"
+                            type="date"
+                            :default-value="props.order.estimated_delivery_date ? String(props.order.estimated_delivery_date).slice(0, 10) : ''"
+                            class="h-9 w-44"
+                        />
+                    </div>
                     <Button type="submit">Update</Button>
                 </Form>
             </CardContent>
@@ -79,14 +106,19 @@ const props = defineProps<{
                     <p><strong>City:</strong> {{ props.order.city }}</p>
                     <p><strong>Postal Code:</strong> {{ props.order.postal_code }}</p>
                     <p><strong>Method:</strong> {{ props.order.shipping_method }}</p>
+                    <p>
+                        <strong>Delivery Estimate:</strong>
+                        {{ props.order.estimated_delivery_date ?? props.order.delivery_estimate_label ?? 'Not set' }}
+                    </p>
                 </CardContent>
             </Card>
             <Card>
-                <CardHeader><CardTitle>Order Summary</CardTitle></CardHeader>
+                <CardHeader><CardTitle>Order Summary & Payment</CardTitle></CardHeader>
                 <CardContent class="space-y-1 text-sm">
                     <p><strong>Subtotal:</strong> ${{ props.order.subtotal }}</p>
                     <p><strong>Shipping:</strong> ${{ props.order.shipping_fee }}</p>
                     <p><strong>Total:</strong> ${{ props.order.total }}</p>
+                    <p><strong>Payment Method:</strong> {{ props.order.payment_method }}</p>
                 </CardContent>
             </Card>
         </div>
@@ -94,8 +126,15 @@ const props = defineProps<{
         <Card>
             <CardHeader><CardTitle>Items</CardTitle></CardHeader>
             <CardContent class="space-y-2 text-sm">
-                <div v-for="item in props.order.items" :key="item.id" class="flex justify-between border-b pb-2 last:border-none">
-                    <span>{{ item.name }} x {{ item.quantity }}</span>
+                <div v-for="item in props.order.items" :key="item.id" class="flex items-center justify-between border-b pb-2 last:border-none">
+                    <div class="flex items-center gap-3">
+                        <ProductImage
+                            :src="item.product?.image_url ?? '/images/product-placeholder.svg'"
+                            :alt="item.name"
+                            class="h-12 w-12 rounded-md object-cover"
+                        />
+                        <span>{{ item.name }} x {{ item.quantity }}</span>
+                    </div>
                     <span>${{ item.line_total }}</span>
                 </div>
             </CardContent>

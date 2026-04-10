@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { BarChart3, Boxes, ShoppingBag, Truck } from 'lucide-vue-next';
+import { BarChart3, Boxes, CheckCircle2, ClipboardList, PackageSearch, ShoppingBag, Sparkles, Store, Truck } from 'lucide-vue-next';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -77,7 +77,7 @@ const features = [
                             :href="register()"
                             class="rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:opacity-90"
                         >
-                            Get Started
+                            Start Purchasing
                         </Link>
                     </template>
                 </div>
@@ -98,23 +98,21 @@ const features = [
                         Manage products, process orders, monitor analytics, and improve customer shopping experience
                         from one clean and scalable platform.
                     </p>
-                    <div class="flex flex-wrap gap-2">
-                        <Button as-child>
-                            <Link :href="$page.props.auth.user ? dashboard() : login()">Open Dashboard</Link>
-                        </Button>
-                        <Button as-child variant="outline">
-                            <Link :href="$page.props.auth.user ? dashboard() : register()">Start Selling</Link>
-                        </Button>
-                    </div>
+                    <Button as-child>
+                        <Link :href="$page.props.auth.user ? dashboard() : login()">Start Purchasing</Link>
+                    </Button>
                 </div>
-                <Card class="border-border/80 bg-muted/20">
+                <Card class="border-border/80 bg-muted/20 shadow-lg shadow-primary/5 transition-all hover:border-primary/30">
                     <CardHeader>
-                        <CardTitle>Built for Real Ecommerce Operations</CardTitle>
+                        <CardTitle class="flex items-center gap-2">
+                            <Sparkles class="h-4 w-4 text-primary" />
+                            Built for Real Ecommerce Operations
+                        </CardTitle>
                     </CardHeader>
                     <CardContent class="grid gap-3 text-sm text-muted-foreground">
-                        <p>Role-based Admin and Customer portals</p>
-                        <p>Live-ready product, cart, checkout, and order modules</p>
-                        <p>Actionable analytics with revenue and inventory insight</p>
+                        <p class="flex items-center gap-2"><CheckCircle2 class="h-4 w-4 text-primary" />Role-based Admin and Customer portals</p>
+                        <p class="flex items-center gap-2"><CheckCircle2 class="h-4 w-4 text-primary" />Live-ready product, cart, checkout, and order modules</p>
+                        <p class="flex items-center gap-2"><CheckCircle2 class="h-4 w-4 text-primary" />Actionable analytics with revenue and inventory insight</p>
                     </CardContent>
                 </Card>
             </section>
@@ -122,7 +120,7 @@ const features = [
             <section class="space-y-6">
                 <h2 class="text-2xl font-semibold">Core Features</h2>
                 <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                    <Card v-for="feature in features" :key="feature.title">
+                    <Card v-for="feature in features" :key="feature.title" class="transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
                         <CardHeader class="pb-2">
                             <feature.icon class="mb-2 h-5 w-5 text-primary" />
                             <CardTitle class="text-base">{{ feature.title }}</CardTitle>
@@ -138,19 +136,19 @@ const features = [
                 <h2 class="text-2xl font-semibold">How It Works</h2>
                 <div class="grid gap-4 md:grid-cols-3">
                     <Card>
-                        <CardHeader><CardTitle class="text-base">1. Setup Catalog</CardTitle></CardHeader>
+                        <CardHeader><CardTitle class="flex items-center gap-2 text-base"><Store class="h-4 w-4 text-primary" />1. Setup Catalog</CardTitle></CardHeader>
                         <CardContent class="text-sm text-muted-foreground">
                             Add products with pricing, stock, descriptions, and images.
                         </CardContent>
                     </Card>
                     <Card>
-                        <CardHeader><CardTitle class="text-base">2. Process Orders</CardTitle></CardHeader>
+                        <CardHeader><CardTitle class="flex items-center gap-2 text-base"><ClipboardList class="h-4 w-4 text-primary" />2. Process Orders</CardTitle></CardHeader>
                         <CardContent class="text-sm text-muted-foreground">
                             Customers place orders, admins track status, and fulfillment runs smoothly.
                         </CardContent>
                     </Card>
                     <Card>
-                        <CardHeader><CardTitle class="text-base">3. Optimize Growth</CardTitle></CardHeader>
+                        <CardHeader><CardTitle class="flex items-center gap-2 text-base"><BarChart3 class="h-4 w-4 text-primary" />3. Optimize Growth</CardTitle></CardHeader>
                         <CardContent class="text-sm text-muted-foreground">
                             Use analytics insights to improve sales, stock planning, and customer experience.
                         </CardContent>
@@ -160,7 +158,7 @@ const features = [
 
             <section class="grid gap-4 lg:grid-cols-2">
                 <Card>
-                    <CardHeader><CardTitle>Admin Overview</CardTitle></CardHeader>
+                    <CardHeader><CardTitle class="flex items-center gap-2"><PackageSearch class="h-4 w-4 text-primary" />Admin Overview</CardTitle></CardHeader>
                     <CardContent class="space-y-2 text-sm text-muted-foreground">
                         <p>- Manage products and inventory in a clean dashboard</p>
                         <p>- Track and update order statuses with structured flow</p>
@@ -168,7 +166,7 @@ const features = [
                     </CardContent>
                 </Card>
                 <Card>
-                    <CardHeader><CardTitle>Customer Experience</CardTitle></CardHeader>
+                    <CardHeader><CardTitle class="flex items-center gap-2"><ShoppingBag class="h-4 w-4 text-primary" />Customer Experience</CardTitle></CardHeader>
                     <CardContent class="space-y-2 text-sm text-muted-foreground">
                         <p>- Discover products with responsive shopping interface</p>
                         <p>- Checkout with clear steps and shipping/payment support</p>
@@ -182,14 +180,9 @@ const features = [
                 <p class="mx-auto mt-2 max-w-2xl text-sm text-muted-foreground">
                     Move from basic storefront to complete ecommerce management with a modern, production-ready system.
                 </p>
-                <div class="mt-4 flex flex-wrap justify-center gap-2">
-                    <Button as-child>
-                        <Link :href="$page.props.auth.user ? dashboard() : login()">Go to Dashboard</Link>
-                    </Button>
-                    <Button as-child variant="outline">
-                        <Link :href="$page.props.auth.user ? dashboard() : register()">Create Account</Link>
-                    </Button>
-                </div>
+                <Button class="mt-4" as-child>
+                    <Link :href="$page.props.auth.user ? dashboard() : login()">Start Purchasing</Link>
+                </Button>
             </section>
         </main>
     </div>

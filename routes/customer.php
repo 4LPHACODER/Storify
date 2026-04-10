@@ -32,4 +32,6 @@ Route::middleware(['auth', 'verified', 'customer'])->group(function () {
         ->name('customer.orders.index');
     Route::get('orders/{order}', [OrderController::class, 'show'])
         ->name('customer.orders.show');
+    Route::patch('orders/{order}/status', [OrderController::class, 'updateStatus'])
+        ->name('customer.orders.update-status');
 });

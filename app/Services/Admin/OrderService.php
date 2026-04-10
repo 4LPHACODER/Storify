@@ -10,7 +10,7 @@ class OrderService
     public function paginate(array $filters): LengthAwarePaginator
     {
         return Order::query()
-            ->with(['user', 'items'])
+            ->with(['user', 'items.product'])
             ->when(
                 $filters['status'] ?? null,
                 fn ($query, $status) => $query->where('status', $status),
@@ -28,10 +28,14 @@ class OrderService
             ->withQueryString();
     }
 
-    public function updateStatus(Order $order, string $status): Order
+    public function updateStatus(Order $order, array $data): Order
     {
-        $order->update(['status' => $status]);
+        $order->update([
+            'status' => $data['status'],
+            'delivery_estimate_label' => $data['delivery_estimate_label'] ?? null,
+            'estimated_delivery_date' => $data['estimated_delivery_date'] ?? null,
+        ]);
 
-        return $order->fresh(['user', 'items']);
+        return $order->fresh(['user', 'items.product']);
     }
 }
