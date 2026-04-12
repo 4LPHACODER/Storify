@@ -25,6 +25,8 @@ class OrderActionRequest extends FormRequest
     {
         return [
             'status' => ['required', Rule::in([Order::STATUS_RECEIVED, Order::STATUS_CANCELLED])],
+            'rating' => ['required_if:status,'.Order::STATUS_RECEIVED, 'integer', 'min:1', 'max:5'],
+            'feedback' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }

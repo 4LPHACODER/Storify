@@ -33,6 +33,9 @@ type Order = {
     payment_method: string;
     delivery_estimate_label?: string | null;
     estimated_delivery_date?: string | null;
+    received_at?: string | null;
+    customer_rating?: number | null;
+    customer_feedback?: string | null;
     items: OrderItem[];
 };
 
@@ -127,6 +130,16 @@ const canUpdateStatus = props.order.status !== 'received';
                 </CardContent>
             </Card>
         </div>
+
+        <Card class="border-border bg-card/95">
+            <CardHeader><CardTitle>Customer Receipt & Feedback</CardTitle></CardHeader>
+            <CardContent class="space-y-1 text-sm">
+                <p><strong>Received Status:</strong> {{ props.order.status === 'received' ? 'Received' : 'Not yet confirmed' }}</p>
+                <p><strong>Received At:</strong> {{ props.order.received_at ?? 'Not yet confirmed' }}</p>
+                <p><strong>Customer Rating:</strong> {{ props.order.customer_rating ? `${props.order.customer_rating}/5` : 'No rating yet' }}</p>
+                <p><strong>Customer Feedback:</strong> {{ props.order.customer_feedback || 'No feedback provided' }}</p>
+            </CardContent>
+        </Card>
 
         <Card class="border-border bg-card/95">
             <CardHeader><CardTitle>Items</CardTitle></CardHeader>

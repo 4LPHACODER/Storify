@@ -30,6 +30,9 @@ class Order extends Model
         'shipping_fee',
         'total',
         'status',
+        'received_at',
+        'customer_rating',
+        'customer_feedback',
         'delivery_estimate_label',
         'estimated_delivery_date',
     ];
@@ -40,6 +43,8 @@ class Order extends Model
             'subtotal' => 'decimal:2',
             'shipping_fee' => 'decimal:2',
             'total' => 'decimal:2',
+            'received_at' => 'datetime',
+            'customer_rating' => 'integer',
             'estimated_delivery_date' => 'date',
         ];
     }
@@ -85,6 +90,7 @@ class Order extends Model
     {
         return [
             self::STATUS_SHIPPED,
+            self::STATUS_OUT_FOR_DELIVERY,
             self::STATUS_DELIVERED,
         ];
     }

@@ -23,6 +23,9 @@ type Order = {
     shipping_method: string;
     delivery_estimate_label?: string | null;
     estimated_delivery_date?: string | null;
+    received_at?: string | null;
+    customer_rating?: number | null;
+    customer_feedback?: string | null;
     contact_number: string;
     address: string;
     city: string;
@@ -117,6 +120,9 @@ const props = defineProps<{
                                 </p>
                                 <p><strong>Contact:</strong> {{ order.contact_number }}</p>
                                 <p><strong>Address:</strong> {{ order.address }}, {{ order.city }}</p>
+                                <p><strong>Received At:</strong> {{ order.received_at ?? 'Not yet confirmed' }}</p>
+                                <p><strong>Rating:</strong> {{ order.customer_rating ? `${order.customer_rating}/5` : 'No rating yet' }}</p>
+                                <p><strong>Feedback:</strong> {{ order.customer_feedback || 'No feedback provided' }}</p>
                             </div>
                         </div>
 

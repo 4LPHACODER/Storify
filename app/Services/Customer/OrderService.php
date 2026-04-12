@@ -78,14 +78,27 @@ class OrderService
         return $order->load('items.product');
     }
 
-    public function updateStatus(User $user, Order $order, string $status): Order
+    /**
+     * @param  array{status:string, rating?:int|string|null, feedback?:string|null}  $data
+     */
+    public function updateStatus(User $user, Order $order, array $data): Order
     {
         abort_unless($order->user_id === $user->id, 403);
+
+        $status = (string) ($data['status'] ?? '');
 
         if ($status === Order::STATUS_RECEIVED) {
             if (! in_array($order->status, Order::customerReceivableStatuses(), true)) {
                 throw ValidationException::withMessages([
                     'status' => 'This order cannot be marked as received yet.',
+                ]);
+            }
+
+            $rating = (int) ($data['rating'] ?? 0);
+
+            if ($rating < 1 || $rating > 5) {
+                throw ValidationException::withMessages([
+                    'rating' => 'Please provide a valid rating between 1 and 5 stars.',
                 ]);
             }
         }
@@ -98,7 +111,16 @@ class OrderService
             }
         }
 
-        $order->update(['status' => $status]);
+        if ($status === Order::STATUS_RECEIVED) {
+            $order->update([
+                'status' => $status,
+                'received_at' => now(),
+                'customer_rating' => (int) $data['rating'],
+                'customer_feedback' => filled($data['feedback'] ?? null) ? trim((string) $data['feedback']) : null,
+            ]);
+        } else {
+            $order->update(['status' => $status]);
+        }
 
         return $order->fresh(['items.product']);
     }

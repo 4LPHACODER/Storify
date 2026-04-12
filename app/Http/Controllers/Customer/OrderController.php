@@ -46,7 +46,7 @@ class OrderController extends Controller
         $this->orderService->updateStatus(
             $request->user(),
             $order,
-            $request->string('status')->toString(),
+            $request->validated(),
         );
 
         return redirect()->back();

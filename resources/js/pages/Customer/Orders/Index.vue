@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Head, Link, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
+import { Star } from 'lucide-vue-next';
 import ProductImage from '@/components/ProductImage.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -45,6 +46,9 @@ const props = defineProps<{
 }>();
 const orderToConfirm = ref<Order | null>(null);
 const successMessage = ref<string | null>(null);
+const selectedRating = ref<number>(5);
+const feedback = ref('');
+const formError = ref<string | null>(null);
 
 const filterTabs = [
     { label: 'To Deliver', value: 'to_deliver' },
@@ -64,6 +68,9 @@ const openReceivedDialog = (order: Order) => {
         return;
     }
 
+    selectedRating.value = 5;
+    feedback.value = '';
+    formError.value = null;
     orderToConfirm.value = order;
 };
 
@@ -72,16 +79,30 @@ const confirmOrderReceived = () => {
         return;
     }
 
+    if (selectedRating.value < 1 || selectedRating.value > 5) {
+        formError.value = 'Please select a rating between 1 and 5 stars.';
+
+        return;
+    }
+
     const orderId = orderToConfirm.value.id;
-    orderToConfirm.value = null;
+    formError.value = null;
 
     router.patch(
         updateStatus(orderId).url,
-        { status: 'received' },
+        {
+            status: 'received',
+            rating: selectedRating.value,
+            feedback: feedback.value,
+        },
         {
             preserveScroll: true,
             onSuccess: () => {
+                orderToConfirm.value = null;
                 successMessage.value = 'Order marked as received successfully.';
+            },
+            onError: (errors) => {
+                formError.value = errors.rating ?? errors.feedback ?? errors.status ?? 'Unable to submit your review right now.';
             },
         },
     );
@@ -90,6 +111,7 @@ const confirmOrderReceived = () => {
 const handleDialogOpenChange = (open: boolean) => {
     if (!open) {
         orderToConfirm.value = null;
+        formError.value = null;
     }
 };
 </script>
@@ -108,14 +130,45 @@ const handleDialogOpenChange = (open: boolean) => {
                 <DialogHeader>
                     <DialogTitle>Confirm Order Receipt</DialogTitle>
                     <DialogDescription>
-                        Are you sure you have received this order?
+                        Please confirm that you have received your order and share your rating.
                     </DialogDescription>
                 </DialogHeader>
+                <div class="space-y-4">
+                    <div>
+                        <p class="mb-2 text-sm font-medium">Rating</p>
+                        <div class="flex items-center gap-1">
+                            <button
+                                v-for="star in 5"
+                                :key="star"
+                                type="button"
+                                class="rounded-md p-1 transition hover:bg-muted"
+                                @click="selectedRating = star"
+                            >
+                                <Star
+                                    class="h-5 w-5"
+                                    :class="star <= selectedRating ? 'fill-primary text-primary' : 'text-muted-foreground'"
+                                />
+                            </button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="order-feedback" class="mb-2 block text-sm font-medium">Feedback (optional)</label>
+                        <textarea
+                            id="order-feedback"
+                            v-model="feedback"
+                            rows="3"
+                            maxlength="1000"
+                            placeholder="Share your experience with this order..."
+                            class="w-full rounded-md border border-input bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
+                        />
+                    </div>
+                    <p v-if="formError" class="text-xs text-destructive">{{ formError }}</p>
+                </div>
                 <DialogFooter class="gap-2">
                     <DialogClose as-child>
                         <Button variant="outline">Cancel</Button>
                     </DialogClose>
-                    <Button type="button" @click="confirmOrderReceived">Confirm</Button>
+                    <Button type="button" @click="confirmOrderReceived">Submit</Button>
                 </DialogFooter>
             </DialogContent>
         </Dialog>
@@ -166,7 +219,7 @@ const handleDialogOpenChange = (open: boolean) => {
                                 type="button"
                                 @click="openReceivedDialog(order)"
                             >
-                                    Order Received
+                                Receive Order
                             </Button>
                             <Button as-child size="sm" variant="destructive" :disabled="!order.can_cancel">
                                 <Link
