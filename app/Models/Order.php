@@ -67,4 +67,25 @@ class Order extends Model
             self::STATUS_CANCELLED,
         ];
     }
+
+    public static function adminManageableStatuses(): array
+    {
+        return [
+            self::STATUS_PENDING,
+            self::STATUS_CONFIRMED,
+            self::STATUS_PACKED,
+            self::STATUS_SHIPPED,
+            self::STATUS_OUT_FOR_DELIVERY,
+            self::STATUS_DELIVERED,
+            self::STATUS_CANCELLED,
+        ];
+    }
+
+    public static function customerReceivableStatuses(): array
+    {
+        return [
+            self::STATUS_SHIPPED,
+            self::STATUS_DELIVERED,
+        ];
+    }
 }

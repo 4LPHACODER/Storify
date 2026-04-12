@@ -50,8 +50,8 @@ const salesOverviewData = computed(() => ({
         {
             label: 'Revenue',
             data: props.salesOverview.map((point) => Number(point.revenue)),
-            borderColor: '#60a5fa',
-            backgroundColor: 'rgba(96,165,250,0.25)',
+            borderColor: '#1ED760',
+            backgroundColor: 'rgba(29,185,84,0.24)',
             tension: 0.35,
             fill: true,
         },
@@ -65,13 +65,13 @@ const ordersByStatusData = computed(() => ({
             label: 'Orders',
             data: props.ordersByStatus.map((point) => point.total),
             backgroundColor: [
-                '#60a5fa',
-                '#34d399',
-                '#fbbf24',
-                '#f97316',
-                '#a78bfa',
-                '#22d3ee',
-                '#f87171',
+                '#1DB954',
+                '#1ED760',
+                '#9BF0B2',
+                '#B3B3B3',
+                '#FFFFFF',
+                '#16A34A',
+                '#ef4444',
             ],
         },
     ],
@@ -83,7 +83,7 @@ const monthlyOrdersData = computed(() => ({
         {
             label: 'Monthly Orders',
             data: props.monthlyTrend.map((point) => point.orders),
-            backgroundColor: '#818cf8',
+            backgroundColor: '#1DB954',
         },
     ],
 }));
@@ -94,18 +94,18 @@ const chartOptions = {
     plugins: {
         legend: {
             labels: {
-                color: '#cbd5e1',
+                color: '#e5e7eb',
             },
         },
     },
     scales: {
         x: {
-            ticks: { color: '#94a3b8' },
-            grid: { color: 'rgba(148,163,184,0.15)' },
+            ticks: { color: '#B3B3B3' },
+            grid: { color: 'rgba(42,42,42,0.9)' },
         },
         y: {
-            ticks: { color: '#94a3b8' },
-            grid: { color: 'rgba(148,163,184,0.15)' },
+            ticks: { color: '#B3B3B3' },
+            grid: { color: 'rgba(42,42,42,0.9)' },
         },
     },
 } as const;
@@ -114,22 +114,22 @@ const chartOptions = {
 <template>
     <Head title="Analytics" />
 
-    <div class="space-y-4 p-4">
+    <div class="space-y-4 bg-background p-4">
         <h1 class="text-2xl font-semibold">Storify Analytics</h1>
 
         <div class="grid gap-4 sm:grid-cols-2">
-            <Card>
+            <Card class="border-border bg-card/95">
                 <CardHeader><CardTitle>Total Sales</CardTitle></CardHeader>
                 <CardContent class="text-2xl font-semibold">${{ props.totalSales }}</CardContent>
             </Card>
-            <Card>
+            <Card class="border-border bg-card/95">
                 <CardHeader><CardTitle>Total Orders</CardTitle></CardHeader>
                 <CardContent class="text-2xl font-semibold">{{ props.totalOrders }}</CardContent>
             </Card>
         </div>
 
         <div class="grid gap-4 lg:grid-cols-2">
-            <Card>
+            <Card class="border-border bg-card/95">
                 <CardHeader><CardTitle>Sales Overview</CardTitle></CardHeader>
                 <CardContent>
                     <div class="h-72">
@@ -137,7 +137,7 @@ const chartOptions = {
                     </div>
                 </CardContent>
             </Card>
-            <Card>
+            <Card class="border-border bg-card/95">
                 <CardHeader><CardTitle>Orders by Status</CardTitle></CardHeader>
                 <CardContent>
                     <div class="h-72">
@@ -148,7 +148,7 @@ const chartOptions = {
         </div>
 
         <div class="grid gap-4 lg:grid-cols-2">
-            <Card>
+            <Card class="border-border bg-card/95">
                 <CardHeader><CardTitle>Monthly Orders</CardTitle></CardHeader>
                 <CardContent>
                     <div class="h-72">
@@ -156,7 +156,7 @@ const chartOptions = {
                     </div>
                 </CardContent>
             </Card>
-            <Card>
+            <Card class="border-border bg-card/95">
                 <CardHeader><CardTitle>Best-selling Products</CardTitle></CardHeader>
                 <CardContent class="space-y-2 text-sm">
                     <div v-for="product in props.bestSellingProducts" :key="product.name" class="flex justify-between border-b pb-1 last:border-none">

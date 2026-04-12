@@ -76,7 +76,7 @@ defineOptions({
 <template>
     <Head title="Admin Products" />
 
-    <div class="flex flex-col gap-4 p-4">
+    <div class="flex flex-col gap-4 bg-background p-4">
         <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h1 class="text-2xl font-semibold">Products Management</h1>
@@ -96,7 +96,7 @@ defineOptions({
             </div>
         </div>
 
-        <Card>
+        <Card class="border-border bg-card/95">
             <CardContent class="pt-6">
                 <Form v-bind="index.form()" class="flex flex-col gap-2 sm:flex-row">
                     <Input
@@ -115,9 +115,9 @@ defineOptions({
             </CardContent>
         </Card>
 
-        <Card>
+        <Card class="border-border bg-card/95">
             <div class="grid gap-4 p-4 sm:grid-cols-2 xl:grid-cols-4">
-                <Card v-for="card in summaryCards" :key="card.title">
+                <Card v-for="card in summaryCards" :key="card.title" class="border-border bg-muted/20">
                     <CardHeader class="flex flex-row items-start justify-between space-y-0">
                         <div>
                             <p class="text-sm text-muted-foreground">{{ card.title }}</p>
@@ -132,14 +132,14 @@ defineOptions({
             </div>
         </Card>
 
-        <Card>
+        <Card class="border-border bg-card/95">
             <CardHeader>
                 <CardTitle>All Products</CardTitle>
             </CardHeader>
             <CardContent>
-                <div class="overflow-x-auto rounded-md border">
+                <div class="overflow-x-auto rounded-md border border-border bg-muted/10">
                     <table class="w-full min-w-[760px] text-sm">
-                        <thead class="bg-muted/40 text-left text-muted-foreground">
+                        <thead class="bg-muted/60 text-left text-muted-foreground">
                             <tr>
                                 <th class="px-4 py-3 font-medium">Image</th>
                                 <th class="px-4 py-3 font-medium">Name</th>

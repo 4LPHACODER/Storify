@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Concerns\ResolvesDefaultAvatar;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -11,6 +12,8 @@ use Laravel\Socialite\Facades\Socialite;
 
 class SocialiteLoginController extends Controller
 {
+    use ResolvesDefaultAvatar;
+
     /**
      * Redirect the user to the Google authentication page.
      */
@@ -57,9 +60,11 @@ class SocialiteLoginController extends Controller
         $user = User::where('email', $googleUser->getEmail())->first();
 
         if ($user) {
+            $avatar = $user->getRawOriginal('avatar') ?: ($googleUser->getAvatar() ?: $this->defaultAvatarUrl($googleUser->getName()));
+
             $user->update([
                 'google_id' => $googleUser->getId(),
-                'avatar' => $googleUser->getAvatar(),
+                'avatar' => $avatar,
                 'role' => $user->role ?: 'customer',
             ]);
 
@@ -67,11 +72,13 @@ class SocialiteLoginController extends Controller
         }
 
         return DB::transaction(function () use ($googleUser): User {
+            $avatar = $googleUser->getAvatar() ?: $this->defaultAvatarUrl($googleUser->getName());
+
             $user = User::create([
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
                 'google_id' => $googleUser->getId(),
-                'avatar' => $googleUser->getAvatar(),
+                'avatar' => $avatar,
                 'role' => 'customer',
                 'email_verified_at' => now(),
             ]);

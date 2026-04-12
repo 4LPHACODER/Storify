@@ -26,8 +26,8 @@ defineOptions({
 <template>
     <Head title="Create Product" />
 
-    <div class="p-4">
-        <Card>
+    <div class="bg-background p-4">
+        <Card class="border-border bg-card/95">
             <CardHeader>
                 <CardTitle>Create Product</CardTitle>
             </CardHeader>
@@ -49,7 +49,7 @@ defineOptions({
                         <textarea
                             id="description"
                             name="description"
-                            class="min-h-28 rounded-md border px-3 py-2 text-sm"
+                            class="min-h-28 rounded-md border border-input bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
                             required
                         />
                         <InputError :message="errors.description" />

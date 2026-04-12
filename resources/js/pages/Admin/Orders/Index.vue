@@ -48,10 +48,10 @@ const props = defineProps<{
 <template>
     <Head title="Admin Orders" />
 
-    <div class="space-y-4 p-4">
+    <div class="space-y-4 bg-background p-4">
         <h1 class="text-2xl font-semibold">Orders</h1>
 
-        <Card>
+        <Card class="border-border bg-card/95">
             <CardHeader><CardTitle>Filters</CardTitle></CardHeader>
             <CardContent>
                 <Form v-bind="index.form()" class="grid gap-3 md:grid-cols-3">
@@ -72,13 +72,13 @@ const props = defineProps<{
             </CardContent>
         </Card>
 
-        <Card>
+        <Card class="border-border bg-card/95">
             <CardContent class="pt-6">
                 <div class="space-y-3">
                     <div
                         v-for="order in props.orders.data"
                         :key="order.id"
-                        class="rounded-lg border p-4"
+                        class="rounded-lg border border-border bg-muted/20 p-4"
                     >
                         <div class="flex flex-wrap items-start justify-between gap-3">
                             <div>

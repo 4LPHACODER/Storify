@@ -36,7 +36,7 @@ class OrderController extends Controller
     {
         return Inertia::render('Admin/Orders/Show', [
             'order' => $order->load(['user', 'items.product']),
-            'statuses' => Order::statuses(),
+            'statuses' => Order::adminManageableStatuses(),
         ]);
     }
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Form, Head, Link, usePage } from '@inertiajs/vue3';
+import { Form, Head, Link, router, usePage } from '@inertiajs/vue3';
+import { LogOut } from 'lucide-vue-next';
 import { computed } from 'vue';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import DeleteUser from '@/components/DeleteUser.vue';
@@ -8,6 +9,7 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { logout } from '@/routes';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 
@@ -31,6 +33,10 @@ defineOptions({
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+
+const handleLogout = () => {
+    router.flushAll();
+};
 </script>
 
 <template>
@@ -49,7 +55,36 @@ const user = computed(() => page.props.auth.user);
             v-bind="ProfileController.update.form()"
             class="space-y-6"
             v-slot="{ errors, processing }"
+            enctype="multipart/form-data"
         >
+            <div class="flex items-center gap-3">
+                <div class="h-14 w-14 overflow-hidden rounded-full border border-border bg-muted">
+                    <img
+                        v-if="user.avatar"
+                        :src="String(user.avatar)"
+                        :alt="`${user.name} avatar`"
+                        class="h-full w-full object-cover"
+                    />
+                    <div
+                        v-else
+                        class="flex h-full w-full items-center justify-center text-sm font-semibold text-muted-foreground"
+                    >
+                        {{ String(user.name).charAt(0).toUpperCase() }}
+                    </div>
+                </div>
+                <div class="grid gap-2">
+                    <Label for="avatar">Profile image</Label>
+                    <Input
+                        id="avatar"
+                        type="file"
+                        name="avatar"
+                        accept="image/*"
+                        class="mt-1 block w-full"
+                    />
+                    <InputError class="mt-1" :message="errors.avatar" />
+                </div>
+            </div>
+
             <div class="grid gap-2">
                 <Label for="name">Name</Label>
                 <Input
@@ -105,6 +140,28 @@ const user = computed(() => page.props.auth.user);
                 >
             </div>
         </Form>
+
+        <div class="rounded-xl border border-border bg-card/90 p-4 shadow-sm shadow-black/20">
+            <Heading
+                variant="small"
+                title="Account actions"
+                description="Manage your current session."
+            />
+
+            <div class="mt-3">
+                <Button as-child variant="outline" class="w-full justify-start sm:w-auto">
+                    <Link
+                        :href="logout()"
+                        as="button"
+                        @click="handleLogout"
+                        data-test="profile-logout-button"
+                    >
+                        <LogOut class="mr-2 h-4 w-4" />
+                        Log out
+                    </Link>
+                </Button>
+            </div>
+        </div>
     </div>
 
     <DeleteUser />

@@ -11,7 +11,7 @@ import {
     PointElement,
     Tooltip,
 } from 'chart.js';
-import { AlertTriangle, Boxes, DollarSign, ShoppingBag } from 'lucide-vue-next';
+import { AlertTriangle, Boxes, CheckCircle2, DollarSign, PackageCheck, ShoppingBag } from 'lucide-vue-next';
 import { computed } from 'vue';
 import { Bar, Doughnut, Line } from 'vue-chartjs';
 import { Badge } from '@/components/ui/badge';
@@ -63,6 +63,7 @@ const props = defineProps<{
     totalOrders: number;
     pendingOrders: number;
     deliveredOrders: number;
+    receivedOrders: number;
     totalCustomers: number;
     revenue: string;
     lowStockProducts: Product[];
@@ -73,6 +74,15 @@ const props = defineProps<{
 }>();
 
 const lowStockCount = computed(() => props.lowStockProducts.length);
+const summaryCards = computed(() => [
+    { title: 'Total Revenue', value: `$${props.revenue}`, icon: DollarSign, highlight: true },
+    { title: 'Total Orders', value: props.totalOrders, icon: ShoppingBag },
+    { title: 'Pending Orders', value: props.pendingOrders, icon: ShoppingBag },
+    { title: 'Delivered Orders', value: props.deliveredOrders, icon: PackageCheck },
+    { title: 'Received Orders', value: props.receivedOrders, icon: CheckCircle2, highlight: true },
+    { title: 'Total Products', value: props.totalProducts, icon: Boxes },
+    { title: 'Low Stock Products', value: lowStockCount.value, icon: AlertTriangle },
+]);
 
 const salesOverviewData = computed(() => ({
     labels: props.salesOverview.map((point) => point.date),
@@ -80,8 +90,8 @@ const salesOverviewData = computed(() => ({
         {
             label: 'Revenue',
             data: props.salesOverview.map((point) => Number(point.revenue)),
-            borderColor: '#60a5fa',
-            backgroundColor: 'rgba(96,165,250,0.25)',
+            borderColor: '#1ED760',
+            backgroundColor: 'rgba(29,185,84,0.24)',
             tension: 0.35,
             fill: true,
         },
@@ -94,7 +104,7 @@ const monthlyRevenueData = computed(() => ({
         {
             label: 'Monthly Revenue',
             data: props.monthlyRevenueTrend.map((point) => Number(point.revenue)),
-            backgroundColor: '#818cf8',
+            backgroundColor: '#1DB954',
         },
     ],
 }));
@@ -106,13 +116,13 @@ const ordersByStatusData = computed(() => ({
             label: 'Orders',
             data: props.ordersByStatus.map((point) => point.total),
             backgroundColor: [
-                '#60a5fa',
-                '#34d399',
-                '#fbbf24',
-                '#f97316',
-                '#a78bfa',
-                '#22d3ee',
-                '#f87171',
+                '#1DB954',
+                '#1ED760',
+                '#9BF0B2',
+                '#B3B3B3',
+                '#FFFFFF',
+                '#16A34A',
+                '#ef4444',
             ],
         },
     ],
@@ -124,7 +134,7 @@ const bestSellingData = computed(() => ({
         {
             label: 'Units Sold',
             data: props.bestSellingProducts.map((point) => point.total_quantity),
-            backgroundColor: '#34d399',
+            backgroundColor: '#1DB954',
         },
     ],
 }));
@@ -134,17 +144,17 @@ const chartOptions = {
     maintainAspectRatio: false,
     plugins: {
         legend: {
-            labels: { color: '#cbd5e1' },
+            labels: { color: '#e5e7eb' },
         },
     },
     scales: {
         x: {
-            ticks: { color: '#94a3b8' },
-            grid: { color: 'rgba(148,163,184,0.15)' },
+            ticks: { color: '#B3B3B3' },
+            grid: { color: 'rgba(42,42,42,0.9)' },
         },
         y: {
-            ticks: { color: '#94a3b8' },
-            grid: { color: 'rgba(148,163,184,0.15)' },
+            ticks: { color: '#B3B3B3' },
+            grid: { color: 'rgba(42,42,42,0.9)' },
         },
     },
 } as const;
@@ -159,66 +169,43 @@ defineOptions({
 <template>
     <Head title="Admin Dashboard" />
 
-    <div class="space-y-4 p-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-            <h1 class="text-2xl font-semibold">Storify Admin Dashboard</h1>
-            <div class="flex gap-2">
-                <Button as-child variant="outline">
-                    <Link :href="adminOrdersIndex()">View Orders</Link>
-                </Button>
-                <Button as-child>
-                    <Link :href="adminProductsIndex()">Manage Products</Link>
-                </Button>
+    <div class="space-y-5 bg-background p-4">
+        <div class="rounded-xl border border-border bg-gradient-to-br from-card to-muted/35 p-4 shadow-lg shadow-black/20">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                    <p class="text-xs uppercase tracking-wide text-primary">Admin Control Center</p>
+                    <h1 class="mt-1 text-2xl font-semibold">Storify Admin Dashboard</h1>
+                    <p class="mt-1 text-sm text-muted-foreground">Monitor operations, orders, and product performance in one place.</p>
+                </div>
+                <div class="flex gap-2">
+                    <Button as-child variant="outline">
+                        <Link :href="adminOrdersIndex()">View Orders</Link>
+                    </Button>
+                    <Button as-child>
+                        <Link :href="adminProductsIndex()">Manage Products</Link>
+                    </Button>
+                </div>
             </div>
         </div>
 
-        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <Card>
-                <CardHeader class="flex flex-row items-center justify-between">
-                    <CardTitle class="text-sm">Total Revenue</CardTitle>
-                    <DollarSign class="size-4 text-muted-foreground" />
+        <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <Card
+                v-for="card in summaryCards"
+                :key="card.title"
+                class="border-border bg-card/95 shadow-sm shadow-black/20"
+            >
+                <CardHeader class="flex flex-row items-center justify-between pb-2">
+                    <CardTitle class="text-sm text-muted-foreground">{{ card.title }}</CardTitle>
+                    <card.icon class="size-4" :class="card.highlight ? 'text-primary' : 'text-muted-foreground'" />
                 </CardHeader>
-                <CardContent class="text-2xl font-semibold">${{ props.revenue }}</CardContent>
-            </Card>
-            <Card>
-                <CardHeader class="flex flex-row items-center justify-between">
-                    <CardTitle class="text-sm">Total Orders</CardTitle>
-                    <ShoppingBag class="size-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent class="text-2xl font-semibold">{{ props.totalOrders }}</CardContent>
-            </Card>
-            <Card>
-                <CardHeader class="flex flex-row items-center justify-between">
-                    <CardTitle class="text-sm">Pending Orders</CardTitle>
-                    <ShoppingBag class="size-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent class="text-2xl font-semibold">{{ props.pendingOrders }}</CardContent>
-            </Card>
-            <Card>
-                <CardHeader class="flex flex-row items-center justify-between">
-                    <CardTitle class="text-sm">Delivered Orders</CardTitle>
-                    <ShoppingBag class="size-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent class="text-2xl font-semibold">{{ props.deliveredOrders }}</CardContent>
-            </Card>
-            <Card>
-                <CardHeader class="flex flex-row items-center justify-between">
-                    <CardTitle class="text-sm">Total Products</CardTitle>
-                    <Boxes class="size-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent class="text-2xl font-semibold">{{ props.totalProducts }}</CardContent>
-            </Card>
-            <Card>
-                <CardHeader class="flex flex-row items-center justify-between">
-                    <CardTitle class="text-sm">Low Stock Products</CardTitle>
-                    <AlertTriangle class="size-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent class="text-2xl font-semibold">{{ lowStockCount }}</CardContent>
+                <CardContent class="text-2xl font-semibold" :class="card.highlight ? 'text-primary' : 'text-foreground'">
+                    {{ card.value }}
+                </CardContent>
             </Card>
         </div>
 
         <div class="grid gap-4 lg:grid-cols-2">
-            <Card>
+            <Card class="border-border bg-card/95 shadow-sm shadow-black/20">
                 <CardHeader><CardTitle>Sales Overview</CardTitle></CardHeader>
                 <CardContent>
                     <div class="h-72">
@@ -227,7 +214,7 @@ defineOptions({
                 </CardContent>
             </Card>
 
-            <Card>
+            <Card class="border-border bg-card/95 shadow-sm shadow-black/20">
                 <CardHeader><CardTitle>Monthly Revenue Trend</CardTitle></CardHeader>
                 <CardContent>
                     <div class="h-72">
@@ -238,7 +225,7 @@ defineOptions({
         </div>
 
         <div class="grid gap-4 lg:grid-cols-2">
-            <Card>
+            <Card class="border-border bg-card/95 shadow-sm shadow-black/20">
                 <CardHeader><CardTitle>Orders by Status</CardTitle></CardHeader>
                 <CardContent>
                     <div class="h-72">
@@ -246,7 +233,7 @@ defineOptions({
                     </div>
                 </CardContent>
             </Card>
-            <Card>
+            <Card class="border-border bg-card/95 shadow-sm shadow-black/20">
                 <CardHeader><CardTitle>Best-selling Products</CardTitle></CardHeader>
                 <CardContent>
                     <div class="h-72">
@@ -257,7 +244,7 @@ defineOptions({
         </div>
 
         <div class="grid gap-4 lg:grid-cols-2">
-            <Card>
+            <Card class="border-border bg-card/95 shadow-sm shadow-black/20">
                 <CardHeader><CardTitle>Low Stock Alerts</CardTitle></CardHeader>
                 <CardContent class="space-y-2 text-sm">
                     <div
@@ -273,12 +260,13 @@ defineOptions({
                     </div>
                 </CardContent>
             </Card>
-            <Card>
+            <Card class="border-border bg-card/95 shadow-sm shadow-black/20">
                 <CardHeader><CardTitle>Admin Snapshot</CardTitle></CardHeader>
                 <CardContent class="space-y-2 text-sm">
                     <div class="flex justify-between"><span>Total Customers</span><span>{{ props.totalCustomers }}</span></div>
                     <div class="flex justify-between"><span>Pending Orders</span><span>{{ props.pendingOrders }}</span></div>
                     <div class="flex justify-between"><span>Delivered Orders</span><span>{{ props.deliveredOrders }}</span></div>
+                    <div class="flex justify-between"><span>Received Orders</span><span class="text-primary">{{ props.receivedOrders }}</span></div>
                 </CardContent>
             </Card>
         </div>

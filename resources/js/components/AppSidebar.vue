@@ -26,6 +26,11 @@ import type { NavItem } from '@/types';
 
 const page = usePage();
 const userRole = computed(() => page.props.auth.user.role as string);
+const sidebarClass = computed(() =>
+    userRole.value === 'customer'
+        ? 'bg-sidebar text-sidebar-foreground hidden md:flex'
+        : 'bg-sidebar text-sidebar-foreground',
+);
 
 const mainNavItems = computed<NavItem[]>(() =>
     userRole.value === 'admin'
@@ -82,7 +87,7 @@ const mainNavItems = computed<NavItem[]>(() =>
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon" variant="inset" :class="sidebarClass">
         <SidebarHeader>
             <SidebarMenu>
                 <SidebarMenuItem>

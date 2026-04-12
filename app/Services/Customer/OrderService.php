@@ -61,7 +61,7 @@ class OrderService
                     'shipping_method' => $order->shipping_method,
                     'delivery_estimate' => $this->resolveDeliveryEstimate($order),
                     'image_url' => $firstItem?->product?->image_url ?? '/images/product-placeholder.svg',
-                    'can_mark_received' => in_array($order->status, [Order::STATUS_DELIVERED, Order::STATUS_OUT_FOR_DELIVERY], true),
+                    'can_mark_received' => in_array($order->status, Order::customerReceivableStatuses(), true),
                     'can_cancel' => in_array($order->status, [
                         Order::STATUS_PENDING,
                         Order::STATUS_CONFIRMED,
@@ -83,7 +83,7 @@ class OrderService
         abort_unless($order->user_id === $user->id, 403);
 
         if ($status === Order::STATUS_RECEIVED) {
-            if (! in_array($order->status, [Order::STATUS_DELIVERED, Order::STATUS_OUT_FOR_DELIVERY], true)) {
+            if (! in_array($order->status, Order::customerReceivableStatuses(), true)) {
                 throw ValidationException::withMessages([
                     'status' => 'This order cannot be marked as received yet.',
                 ]);

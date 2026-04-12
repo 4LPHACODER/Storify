@@ -24,7 +24,7 @@ class OrderStatusUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', Rule::in(Order::statuses())],
+            'status' => ['required', Rule::in(Order::adminManageableStatuses())],
             'delivery_estimate_label' => ['nullable', 'string', 'max:50'],
             'estimated_delivery_date' => ['nullable', 'date'],
         ];

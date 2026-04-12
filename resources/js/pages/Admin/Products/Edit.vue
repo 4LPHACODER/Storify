@@ -37,8 +37,8 @@ defineOptions({
 <template>
     <Head title="Edit Product" />
 
-    <div class="p-4">
-        <Card>
+    <div class="bg-background p-4">
+        <Card class="border-border bg-card/95">
             <CardHeader>
                 <CardTitle>Edit Product</CardTitle>
             </CardHeader>
@@ -65,7 +65,7 @@ defineOptions({
                         <textarea
                             id="description"
                             name="description"
-                            class="min-h-28 rounded-md border px-3 py-2 text-sm"
+                            class="min-h-28 rounded-md border border-input bg-input px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
                             required
                             :default-value="props.product.description"
                         />

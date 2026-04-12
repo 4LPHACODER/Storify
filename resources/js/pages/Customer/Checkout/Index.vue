@@ -108,7 +108,7 @@ const totalAmount = computed(() => {
 <template>
     <Head title="Checkout" />
 
-    <div class="space-y-4 p-4">
+    <div class="space-y-4 bg-background p-4">
         <div class="flex flex-wrap items-center justify-between gap-2">
             <h1 class="text-2xl font-semibold">Checkout</h1>
             <Button as-child variant="outline">
@@ -148,7 +148,7 @@ const totalAmount = computed(() => {
             v-slot="{ errors, processing }"
         >
             <div class="space-y-4 lg:col-span-2">
-                <Card v-show="activeStep === 1">
+                <Card v-show="activeStep === 1" class="border-border bg-card/95">
                     <CardHeader><CardTitle>Address Details</CardTitle></CardHeader>
                     <CardContent class="grid grid-cols-1 gap-3 md:grid-cols-2">
                         <div class="grid gap-2 md:col-span-2">
@@ -183,7 +183,7 @@ const totalAmount = computed(() => {
                     </CardContent>
                 </Card>
 
-                <Card v-show="activeStep === 2">
+                <Card v-show="activeStep === 2" class="border-border bg-card/95">
                     <CardHeader><CardTitle>Shipping Method</CardTitle></CardHeader>
                     <CardContent class="grid grid-cols-1 gap-3">
                         <div class="grid gap-2 md:col-span-2">
@@ -191,7 +191,7 @@ const totalAmount = computed(() => {
                             <div
                                 v-for="method in props.shippingMethods"
                                 :key="method.value"
-                                class="flex items-center justify-between rounded-md border p-3"
+                                class="flex items-center justify-between rounded-md border border-border bg-muted/20 p-3"
                             >
                                 <label class="flex items-center gap-2">
                                     <input
@@ -199,6 +199,7 @@ const totalAmount = computed(() => {
                                         type="radio"
                                         name="shipping_method"
                                         :value="method.value"
+                                        class="accent-primary"
                                     />
                                     {{ method.label }}
                                 </label>
@@ -214,27 +215,29 @@ const totalAmount = computed(() => {
                     </CardContent>
                 </Card>
 
-                <Card v-show="activeStep === 3">
+                <Card v-show="activeStep === 3" class="border-border bg-card/95">
                     <CardHeader><CardTitle>Payment</CardTitle></CardHeader>
                     <CardContent class="space-y-3">
-                        <div class="flex items-center justify-between rounded-md border p-3">
+                        <div class="flex items-center justify-between rounded-md border border-border bg-muted/20 p-3">
                             <label class="flex items-center gap-2">
                                 <input
                                     v-model="selectedPaymentMethod"
                                     type="radio"
                                     name="payment_method"
                                     value="cod"
+                                    class="accent-primary"
                                 />
                                 Cash on Delivery
                             </label>
                         </div>
-                        <div class="flex items-center justify-between rounded-md border p-3">
+                        <div class="flex items-center justify-between rounded-md border border-border bg-muted/20 p-3">
                             <label class="flex items-center gap-2">
                                 <input
                                     v-model="selectedPaymentMethod"
                                     type="radio"
                                     name="payment_method"
                                     value="card"
+                                    class="accent-primary"
                                 />
                                 Card Payment
                             </label>
@@ -247,7 +250,7 @@ const totalAmount = computed(() => {
                     </CardContent>
                 </Card>
 
-                <Card v-show="activeStep === 4">
+                <Card v-show="activeStep === 4" class="border-border bg-card/95">
                     <CardHeader><CardTitle>Checkout</CardTitle></CardHeader>
                     <CardContent class="space-y-3">
                         <div
@@ -283,7 +286,7 @@ const totalAmount = computed(() => {
                 </Card>
             </div>
 
-            <Card class="h-fit">
+            <Card class="h-fit border-border bg-card/95">
                 <CardHeader>
                     <CardTitle>Order Summary</CardTitle>
                 </CardHeader>

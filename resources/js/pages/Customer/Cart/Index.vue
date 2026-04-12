@@ -65,7 +65,7 @@ defineOptions({
 <template>
     <Head title="Your Cart" />
 
-    <div class="space-y-4 p-4">
+    <div class="space-y-4 bg-background p-4">
         <Dialog :open="showEmptyCartDialog" @update:open="showEmptyCartDialog = $event">
             <DialogContent>
                 <DialogHeader>
@@ -97,6 +97,7 @@ defineOptions({
                 <Card
                     v-for="item in props.items"
                     :key="item.id"
+                    class="border-border bg-card/95"
                 >
                     <CardContent class="flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
                         <ProductImage
@@ -139,14 +140,14 @@ defineOptions({
                         </Button>
                     </CardContent>
                 </Card>
-                <Card v-if="props.items.length === 0">
+                <Card v-if="props.items.length === 0" class="border-border bg-card/95">
                     <CardContent class="p-6 text-center text-muted-foreground">
                         Your cart is empty.
                     </CardContent>
                 </Card>
             </div>
 
-            <Card class="h-fit">
+            <Card class="h-fit border-border bg-card/95">
                 <CardHeader>
                     <CardTitle>Order Summary</CardTitle>
                 </CardHeader>

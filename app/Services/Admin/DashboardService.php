@@ -18,6 +18,7 @@ class DashboardService
         $totalOrders = Order::query()->count();
         $pendingOrders = Order::query()->where('status', Order::STATUS_PENDING)->count();
         $deliveredOrders = Order::query()->where('status', Order::STATUS_DELIVERED)->count();
+        $receivedOrders = Order::query()->where('status', Order::STATUS_RECEIVED)->count();
         $totalCustomers = User::query()->where('role', 'customer')->count();
         $revenue = (float) Order::query()->where('status', '!=', Order::STATUS_CANCELLED)->sum('total');
         $lowStockProducts = Product::query()->where('stock', '<=', 10)->orderBy('stock')->limit(5)->get();
@@ -67,6 +68,7 @@ class DashboardService
             'totalOrders' => $totalOrders,
             'pendingOrders' => $pendingOrders,
             'deliveredOrders' => $deliveredOrders,
+            'receivedOrders' => $receivedOrders,
             'totalCustomers' => $totalCustomers,
             'revenue' => number_format($revenue, 2, '.', ''),
             'lowStockProducts' => $lowStockProducts,

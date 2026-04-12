@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import ProductImage from '@/components/ProductImage.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -19,6 +20,8 @@ type Product = {
 const props = defineProps<{
     product: Product;
 }>();
+const page = usePage<{ auth?: { user?: { role?: string } } }>();
+const isCustomerUser = computed(() => page.props.auth?.user?.role === 'customer');
 
 defineOptions({
     layout: {
@@ -35,15 +38,15 @@ defineOptions({
 <template>
     <Head :title="props.product.name" />
 
-    <div class="p-4">
-        <Card class="overflow-hidden">
+    <div class="space-y-3 bg-background p-3 sm:space-y-0 sm:p-4">
+        <Card class="overflow-hidden border-border bg-card/95">
             <ProductImage
                 :src="props.product.image_url"
                 :alt="props.product.name"
                 class="h-60 w-full object-cover sm:h-80"
             />
 
-            <CardContent class="space-y-4 p-6">
+            <CardContent class="space-y-4 p-4 sm:p-6">
                 <div class="flex flex-wrap items-center justify-between gap-3">
                     <h1 class="text-2xl font-semibold">{{ props.product.name }}</h1>
                     <Badge
@@ -61,7 +64,12 @@ defineOptions({
                 </p>
                 <div class="text-lg font-semibold">${{ props.product.price }}</div>
                 <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                    <Button as-child variant="outline" :disabled="props.product.stock < 1">
+                    <Button
+                        v-if="isCustomerUser"
+                        as-child
+                        variant="outline"
+                        :disabled="props.product.stock < 1"
+                    >
                         <Link
                             as="button"
                             method="post"
@@ -71,17 +79,17 @@ defineOptions({
                             Add to Cart
                         </Link>
                     </Button>
-                    <Button as-child :disabled="props.product.stock < 1">
+                    <Button v-if="isCustomerUser" as-child :disabled="props.product.stock < 1">
                         <Link
                             as="button"
                             method="post"
                             :href="buyNow()"
-                            :data="{ product_id: props.product.id }"
+                            :data="{ product_id: props.product.id, quantity: 1 }"
                         >
                             Buy Now
                         </Link>
                     </Button>
-                    <Button as-child variant="outline">
+                    <Button v-if="isCustomerUser" as-child variant="outline">
                         <Link :href="cartIndex()">View Cart</Link>
                     </Button>
                     <Button as-child variant="outline">
@@ -90,5 +98,41 @@ defineOptions({
                 </div>
             </CardContent>
         </Card>
+
+        <div
+            v-if="isCustomerUser"
+            class="sticky bottom-0 z-30 grid grid-cols-3 gap-2 rounded-lg border border-border bg-card/95 p-2 backdrop-blur sm:hidden"
+        >
+            <Button as-child variant="outline" size="sm" :disabled="props.product.stock < 1">
+                <Link
+                    as="button"
+                    method="post"
+                    :href="addToCart()"
+                    :data="{ product_id: props.product.id, quantity: 1 }"
+                >
+                    Add to Cart
+                </Link>
+            </Button>
+            <Button as-child size="sm" :disabled="props.product.stock < 1">
+                <Link
+                    as="button"
+                    method="post"
+                    :href="buyNow()"
+                    :data="{ product_id: props.product.id, quantity: 1 }"
+                >
+                    Order
+                </Link>
+            </Button>
+            <Button as-child variant="secondary" size="sm" :disabled="props.product.stock < 1">
+                <Link
+                    as="button"
+                    method="post"
+                    :href="buyNow()"
+                    :data="{ product_id: props.product.id, quantity: 1 }"
+                >
+                    Buy Now
+                </Link>
+            </Button>
+        </div>
     </div>
 </template>

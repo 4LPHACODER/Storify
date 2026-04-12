@@ -34,8 +34,8 @@ defineOptions({
 <template>
     <Head :title="props.product.name" />
 
-    <div class="p-4">
-        <Card>
+    <div class="bg-background p-4">
+        <Card class="border-border bg-card/95">
             <CardHeader class="flex flex-row items-start justify-between">
                 <CardTitle>{{ props.product.name }}</CardTitle>
                 <Badge

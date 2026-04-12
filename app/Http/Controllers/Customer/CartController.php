@@ -66,8 +66,9 @@ class CartController extends Controller
         $validated = $request->validated();
 
         $product = Product::query()->findOrFail($validated['product_id']);
+        $quantity = $validated['quantity'] ?? 1;
         abort_if($product->stock < 1, 422, 'This product is out of stock.');
-        $this->cartService->add($request->user(), $product, 1);
+        $this->cartService->add($request->user(), $product, $quantity);
 
         return redirect()->route('customer.checkout.index');
     }

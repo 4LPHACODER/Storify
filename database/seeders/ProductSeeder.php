@@ -45,6 +45,14 @@ class ProductSeeder extends Seeder
                 'image' => null,
                 'image_link' => 'https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?auto=format&fit=crop&w=900&q=80',
             ],
+            [
+                'name' => 'AMD Ryzen 9 5900X',
+                'description' => 'High-performance 12-core desktop processor built for gaming, content creation, and demanding workloads.',
+                'price' => 399.00,
+                'stock' => 18,
+                'image' => null,
+                'image_link' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRgThLDPqz4qH55TQqJLf2fJTe6pMDlASXEqA&s',
+            ],
         ])->each(fn (array $product) => Product::query()->updateOrCreate(
             ['name' => $product['name']],
             $product,

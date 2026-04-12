@@ -4,6 +4,7 @@ namespace App\Services\Admin;
 
 use App\Models\Order;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Validation\ValidationException;
 
 class OrderService
 {
@@ -30,6 +31,12 @@ class OrderService
 
     public function updateStatus(Order $order, array $data): Order
     {
+        if ($order->status === Order::STATUS_RECEIVED) {
+            throw ValidationException::withMessages([
+                'status' => 'This order has already been confirmed as received by the customer.',
+            ]);
+        }
+
         $order->update([
             'status' => $data['status'],
             'delivery_estimate_label' => $data['delivery_estimate_label'] ?? null,

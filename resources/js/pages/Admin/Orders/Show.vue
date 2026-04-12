@@ -40,21 +40,26 @@ const props = defineProps<{
     order: Order;
     statuses: string[];
 }>();
+
+const canUpdateStatus = props.order.status !== 'received';
 </script>
 
 <template>
     <Head :title="`Order #${props.order.id}`" />
 
-    <div class="space-y-4 p-4">
+    <div class="space-y-4 bg-background p-4">
         <div class="flex items-center justify-between">
             <h1 class="text-2xl font-semibold">Order #{{ props.order.id }}</h1>
             <Badge>{{ props.order.status.replaceAll('_', ' ') }}</Badge>
         </div>
 
-        <Card>
+        <Card class="border-border bg-card/95">
             <CardHeader><CardTitle>Update Status</CardTitle></CardHeader>
             <CardContent>
-                <Form v-bind="update.form(props.order.id)" class="flex flex-wrap items-center gap-2">
+                <p v-if="!canUpdateStatus" class="mb-3 text-sm text-muted-foreground">
+                    This order is already marked as received by the customer and can no longer be changed by admin.
+                </p>
+                <Form v-if="canUpdateStatus" v-bind="update.form(props.order.id)" class="flex flex-wrap items-center gap-2">
                     <select
                         name="status"
                         :value="props.order.status"
@@ -89,7 +94,7 @@ const props = defineProps<{
             </CardContent>
         </Card>
 
-        <Card>
+        <Card class="border-border bg-card/95">
             <CardHeader><CardTitle>Tracking Timeline</CardTitle></CardHeader>
             <CardContent>
                 <OrderTrackingStepper :status="props.order.status" />
@@ -97,7 +102,7 @@ const props = defineProps<{
         </Card>
 
         <div class="grid gap-4 lg:grid-cols-2">
-            <Card>
+            <Card class="border-border bg-card/95">
                 <CardHeader><CardTitle>Shipping Details</CardTitle></CardHeader>
                 <CardContent class="space-y-1 text-sm">
                     <p><strong>Name:</strong> {{ props.order.full_name }}</p>
@@ -112,7 +117,7 @@ const props = defineProps<{
                     </p>
                 </CardContent>
             </Card>
-            <Card>
+            <Card class="border-border bg-card/95">
                 <CardHeader><CardTitle>Order Summary & Payment</CardTitle></CardHeader>
                 <CardContent class="space-y-1 text-sm">
                     <p><strong>Subtotal:</strong> ${{ props.order.subtotal }}</p>
@@ -123,7 +128,7 @@ const props = defineProps<{
             </Card>
         </div>
 
-        <Card>
+        <Card class="border-border bg-card/95">
             <CardHeader><CardTitle>Items</CardTitle></CardHeader>
             <CardContent class="space-y-2 text-sm">
                 <div v-for="item in props.order.items" :key="item.id" class="flex items-center justify-between border-b pb-2 last:border-none">
