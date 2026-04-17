@@ -8,20 +8,23 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        User::query()->updateOrCreate(
-            ['username' => 'admin'],
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@storify.com'],
             [
-                'name' => 'Administrator',
-                'email' => 'admin@example.com',
-                'password' => Hash::make('admin123'),
-                'role' => 'admin',
+                'name' => 'Admin',
+                'phone_number' => '+639123456700',
+                'password' => Hash::make('AdminStrongPass#8472'),
                 'email_verified_at' => now(),
-            ],
+            ]
         );
+
+        // optional: clear old tokens first
+        $admin->tokens()->delete();
+
+        $token = $admin->createToken('admin-token')->plainTextToken;
+
+        $this->command->info('Admin token: ' . $token);
     }
 }
