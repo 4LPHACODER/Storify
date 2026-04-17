@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Contracts\SmsSenderContract;
 use App\Http\Responses\LoginResponse;
+use App\Services\Sms\LogSmsSender;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +20,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(LoginResponseContract::class, LoginResponse::class);
+        $this->app->bind(SmsSenderContract::class, LogSmsSender::class);
     }
 
     /**
