@@ -3,6 +3,7 @@
 use App\Http\Middleware\EnsurePhoneIsVerified;
 use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\EnsureUserIsCustomer;
+use App\Http\Middleware\ForceJsonAcceptForApi;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -29,6 +30,10 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+        ]);
+
+        $middleware->api(prepend: [
+            ForceJsonAcceptForApi::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
