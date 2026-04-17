@@ -10,7 +10,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['phone_number', 'message', 'status'])]
 class Sms extends Model
 {
+    public const STATUS_PENDING = 'pending';
+
+    public const STATUS_QUEUED = 'queued';
+
+    public const STATUS_SENDING = 'sending';
+
+    public const STATUS_SENT = 'sent';
+
+    public const STATUS_FAILED = 'failed';
+
     protected $table = 'sms';
+
+    /**
+     * @return array<int, string>
+     */
+    public static function validStatuses(): array
+    {
+        return [
+            self::STATUS_PENDING,
+            self::STATUS_QUEUED,
+            self::STATUS_SENDING,
+            self::STATUS_SENT,
+            self::STATUS_FAILED,
+        ];
+    }
 
     /**
      * @param  Builder<Sms>  $query

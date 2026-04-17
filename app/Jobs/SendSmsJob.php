@@ -33,18 +33,56 @@ class SendSmsJob implements ShouldQueue
     {
         $this->sms->refresh();
 
-        if ($this->sms->status === 'sent') {
+        Log::info('SMS job started', [
+            'sms_id' => $this->sms->id,
+            'status' => $this->sms->status,
+            'attempt' => $this->attempts(),
+        ]);
+
+        if ($this->sms->status === Sms::STATUS_SENT) {
+            Log::info('SMS job skipped because message is already sent', [
+                'sms_id' => $this->sms->id,
+            ]);
+
             return;
         }
 
-        $this->sms->update(['status' => 'sending']);
+        if (! in_array($this->sms->status, [Sms::STATUS_PENDING, Sms::STATUS_QUEUED, Sms::STATUS_SENDING], true)) {
+            Log::warning('SMS job skipped due to unsupported status', [
+                'sms_id' => $this->sms->id,
+                'status' => $this->sms->status,
+            ]);
+
+            return;
+        }
+
+        if ($this->sms->status !== Sms::STATUS_SENDING) {
+            $this->sms->update(['status' => Sms::STATUS_SENDING]);
+
+            Log::info('SMS status updated to sending', [
+                'sms_id' => $this->sms->id,
+            ]);
+        } else {
+            Log::warning('SMS retry started while status is already sending', [
+                'sms_id' => $this->sms->id,
+                'attempt' => $this->attempts(),
+            ]);
+        }
 
         try {
             $delivery->deliver($this->sms);
-            $this->sms->update(['status' => 'sent']);
+
+            $this->sms->update(['status' => Sms::STATUS_SENT]);
+
+            Log::info('SMS delivered successfully', [
+                'sms_id' => $this->sms->id,
+                'status' => $this->sms->status,
+            ]);
         } catch (Throwable $e) {
             Log::warning('SMS send attempt failed (may retry)', [
                 'sms_id' => $this->sms->id,
+                'status' => $this->sms->status,
+                'attempt' => $this->attempts(),
                 'exception' => $e->getMessage(),
             ]);
 
@@ -58,14 +96,15 @@ class SendSmsJob implements ShouldQueue
     {
         $this->sms->refresh();
 
-        if ($this->sms->status === 'sent') {
+        if ($this->sms->status === Sms::STATUS_SENT) {
             return;
         }
 
-        $this->sms->update(['status' => 'failed']);
+        $this->sms->update(['status' => Sms::STATUS_FAILED]);
 
         Log::error('SMS job failed after all attempts', [
             'sms_id' => $this->sms->id,
+            'status' => $this->sms->status,
             'exception' => $exception?->getMessage(),
         ]);
     }

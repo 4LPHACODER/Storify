@@ -2,10 +2,12 @@
 
 namespace App\Services\Auth;
 
+use App\Models\Sms;
 use App\Models\User;
 use App\Services\Phone\PhilippineMobileNormalizer;
 use App\Services\Sms\SmsSendDispatcher;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class RegistrationOtpService
 {
@@ -34,7 +36,13 @@ class RegistrationOtpService
         $sms = $user->sms()->create([
             'phone_number' => $phone,
             'message' => $message,
-            'status' => 'pending',
+            'status' => Sms::STATUS_PENDING,
+        ]);
+
+        Log::info('OTP SMS record created', [
+            'sms_id' => $sms->id,
+            'user_id' => $user->id,
+            'status' => $sms->status,
         ]);
 
         $this->smsSendDispatcher->dispatch($sms);
