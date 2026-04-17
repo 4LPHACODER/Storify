@@ -6,7 +6,7 @@ use App\Http\Controllers\Customer\OrderController;
 use App\Http\Controllers\Customer\ProductController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified', 'customer'])->group(function () {
+Route::middleware(['auth', 'verified', 'phone.verified', 'customer'])->group(function () {
     Route::get('products', [ProductController::class, 'index'])
         ->name('customer.products.index');
     Route::get('products/{product}', [ProductController::class, 'show'])

@@ -60,11 +60,25 @@ defineOptions({
             </div>
 
             <div class="grid gap-2">
+                <Label for="phone_number">Mobile number</Label>
+                <Input
+                    id="phone_number"
+                    type="tel"
+                    required
+                    :tabindex="3"
+                    autocomplete="tel"
+                    name="phone_number"
+                    placeholder="09XX XXX XXXX"
+                />
+                <InputError :message="errors.phone_number" />
+            </div>
+
+            <div class="grid gap-2">
                 <Label for="avatar">Profile image (optional)</Label>
                 <Input
                     id="avatar"
                     type="file"
-                    :tabindex="3"
+                    :tabindex="4"
                     accept="image/*"
                     name="avatar"
                 />
@@ -76,7 +90,7 @@ defineOptions({
                 <PasswordInput
                     id="password"
                     required
-                    :tabindex="4"
+                    :tabindex="5"
                     autocomplete="new-password"
                     name="password"
                     placeholder="Password"
@@ -89,7 +103,7 @@ defineOptions({
                 <PasswordInput
                     id="password_confirmation"
                     required
-                    :tabindex="5"
+                    :tabindex="6"
                     autocomplete="new-password"
                     name="password_confirmation"
                     placeholder="Confirm password"
@@ -100,7 +114,7 @@ defineOptions({
             <Button
                 type="submit"
                 class="mt-2 w-full"
-                tabindex="6"
+                tabindex="7"
                 :disabled="processing"
                 data-test="register-user-button"
             >
@@ -125,7 +139,7 @@ defineOptions({
             <TextLink
                 :href="login()"
                 class="underline underline-offset-4"
-                :tabindex="7"
+                :tabindex="8"
                 >Log in</TextLink
             >
         </div>

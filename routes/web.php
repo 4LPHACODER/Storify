@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\PhoneVerificationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SocialiteLoginController;
 use Illuminate\Support\Facades\Route;
@@ -14,7 +15,18 @@ Route::middleware('guest')->group(function () {
     Route::get('auth/google/callback', [SocialiteLoginController::class, 'handleGoogleCallback'])->name('socialite.google.callback');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware('auth')->group(function (): void {
+    Route::get('register/verify-phone', [PhoneVerificationController::class, 'show'])
+        ->name('register.phone-verification.show');
+    Route::post('register/verify-phone', [PhoneVerificationController::class, 'store'])
+        ->middleware('throttle:12,1')
+        ->name('register.phone-verification.store');
+    Route::post('register/verify-phone/resend', [PhoneVerificationController::class, 'resend'])
+        ->middleware('throttle:3,1')
+        ->name('register.phone-verification.resend');
+});
+
+Route::middleware(['auth', 'verified', 'phone.verified'])->group(function () {
     Route::get('dashboard', DashboardController::class)->name('dashboard');
 });
 

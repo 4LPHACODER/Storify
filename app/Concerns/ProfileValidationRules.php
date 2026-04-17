@@ -22,6 +22,14 @@ trait ProfileValidationRules
     }
 
     /**
+     * @return array<int, string>
+     */
+    protected function registrationPhoneRules(): array
+    {
+        return ['required', 'string', 'max:32', 'regex:/^[\d\s\+\-\(\)]+$/'];
+    }
+
+    /**
      * Get the validation rules used to validate user names.
      *
      * @return array<int, \Illuminate\Contracts\Validation\Rule|array<mixed>|string>
